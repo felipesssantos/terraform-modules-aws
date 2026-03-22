@@ -1,0 +1,23 @@
+# Diretórios de execução local do Terraform
+**/.terraform/*
+
+# Arquivos de estado
+*.tfstate
+*.tfstate.*
+
+# Logs de quebras inesperadas
+crash.log
+crash.*.log
+
+# Ignorar o tfvars principal
+*.tfvars
+*.tfvars.json
+
+# Arquivos de configuração da CLI
+.terraformrc
+terraform.rc
+
+# Chaves privadas e senhas locais
+*.pem
+*.key
+*.pub
