@@ -35,38 +35,37 @@ module "minha_vpc_de_teste" {
   }
 }
 
-# Gerador local de par de chaves SSH para testes
-resource "tls_private_key" "ssh_key" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
-}
+# Acesso gerido pelo AWS Systems Manager (SSM) Session Manager
 
-# Envio da chave pública para cadastro na AWS
-resource "aws_key_pair" "this" {
-  key_name   = "${var.project_name}-key"
-  public_key = tls_private_key.ssh_key.public_key_openssh
-}
+# Módulo de IAM criando as permissões de SSM dinamicamente
+module "iam_ec2_ssm" {
+  source = "../../iam"
 
-# Exportando fisicamente a chave privada para acessar a instância
-resource "local_sensitive_file" "private_key" {
-  content         = tls_private_key.ssh_key.private_key_pem
-  filename        = "${path.module}/${var.project_name}-key.pem"
-  file_permission = "0400"
+  role_name               = "${var.project_name}-ssm-role"
+  trusted_services        = ["ec2.amazonaws.com"]
+  managed_policy_arns     = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+  create_instance_profile = true
+  
+  tags = {
+    Environment = "Desenvolvimento via Modulo IAM"
+    Owner       = "Felipe"
+  }
 }
-
 # Instância Módulo EC2 (Servidor)
 module "meu_servidor_web" {
   source = "../../ec2"
 
-  project_name  = var.project_name
+  count = var.count_ec2
+
+  project_name  = "${var.project_name}-${count.index + 1}"
   
   # Acoplamento das saídas geradas pela VPC (Rede) dentro da EC2
   vpc_id        = module.minha_vpc_de_teste.vpc_id
-  subnet_id     = module.minha_vpc_de_teste.public_subnets_ids[0]
+  subnet_id     = module.minha_vpc_de_teste.public_subnets_ids[count.index % length(module.minha_vpc_de_teste.public_subnets_ids)]
   
   ami_id        = var.ami_id
   instance_type = "t2.micro"
-  key_name      = aws_key_pair.this.key_name
+  iam_instance_profile = module.iam_ec2_ssm.instance_profile_name
 
   tags = {
     Environment = "Desenvolvimento via Modulo Terraform"
@@ -74,10 +73,3 @@ module "meu_servidor_web" {
   }
 }
 
-output "resultado_vpc_id" {
-  value = module.minha_vpc_de_teste.vpc_id
-}
-
-output "ip_publico_do_servidor" {
-  value = module.meu_servidor_web.public_ip
-}

@@ -1,7 +1,7 @@
 # Definição do Security Group restrito no VPC referenciado
 resource "aws_security_group" "this" {
   name        = "${var.project_name}-sg"
-  description = "Security Group base com acesso SSH e HTTP"
+  description = "Security Group base com acesso HTTP (Sem SSH, acesso via SSM)"
   vpc_id      = var.vpc_id
 
   ingress {
@@ -12,13 +12,7 @@ resource "aws_security_group" "this" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  ingress {
-    description = "SSH Ingress"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+
 
   egress {
     from_port   = 0
@@ -37,8 +31,9 @@ resource "aws_security_group" "this" {
 resource "aws_instance" "this" {
   ami           = var.ami_id
   instance_type = var.instance_type
-  subnet_id     = var.subnet_id 
-  key_name      = var.key_name != "" ? var.key_name : null
+  subnet_id            = var.subnet_id 
+  key_name             = var.key_name != "" ? var.key_name : null
+  iam_instance_profile = var.iam_instance_profile
 
   vpc_security_group_ids = [aws_security_group.this.id]
   

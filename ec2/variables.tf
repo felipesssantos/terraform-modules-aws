@@ -36,3 +36,9 @@ variable "key_name" {
   type        = string
   default     = ""
 }
+
+variable "iam_instance_profile" {
+  description = "Nome do IAM Instance Profile (criado no modulo IAM) para a instância EC2"
+  type        = string
+  default     = null
+}

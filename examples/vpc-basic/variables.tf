@@ -3,6 +3,12 @@ variable "project_name" {
   type        = string
 }
 
+variable "count_ec2" {
+  description = "Quantidade de instâncias EC2"
+  type        = number
+  default     = 1
+}
+
 variable "vpc_cidr" {
   description = "Bloco IP da VPC"
   type        = string
