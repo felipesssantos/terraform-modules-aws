@@ -6,7 +6,7 @@ variable "project_name" {
 variable "count_ec2" {
   description = "Quantidade de instâncias EC2"
   type        = number
-  default     = 1
+  default     = 2
 }
 
 variable "vpc_cidr" {
