@@ -38,6 +38,7 @@ module "meu_asg" {
   target_group_arns     = [module.meu_balancer.target_group_arn] 
   alb_security_group_id = module.meu_balancer.security_group_id
   iam_instance_profile  = module.identidade_ec2.instance_profile_name
+  user_data             = file("${path.module}/install-site.sh")
   
   ami_id                = var.ami_id
   instance_type         = var.instance_type

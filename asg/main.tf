@@ -3,6 +3,7 @@ resource "aws_launch_template" "this" {
   image_id      = var.ami_id
   instance_type = var.instance_type
   vpc_security_group_ids = [aws_security_group.this.id]
+  user_data = var.user_data != null ? base64encode(var.user_data) : null
 
   iam_instance_profile {
     name = var.iam_instance_profile

@@ -68,3 +68,9 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "user_data" {
+  description = "Script de inicialização (bootstrap) para instalar o Apache e o PHP na máquina nova"
+  type        = string
+  default     = null
+}
