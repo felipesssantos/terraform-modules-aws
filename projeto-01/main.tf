@@ -34,16 +34,16 @@ module "meu_asg" {
   source                = "../asg"
   project_name          = var.project_name
   vpc_id                = module.minha_vpc.vpc_id
-  subnet_ids            = module.minha_vpc.private_subnets_ids 
-  target_group_arns     = [module.meu_balancer.target_group_arn] 
+  subnet_ids            = module.minha_vpc.public_subnets_ids
+  target_group_arns     = [module.meu_balancer.target_group_arn]
   alb_security_group_id = module.meu_balancer.security_group_id
   iam_instance_profile  = module.identidade_ec2.instance_profile_name
   user_data             = file("${path.module}/install-site.sh")
-  
-  ami_id                = var.ami_id
-  instance_type         = var.instance_type
-  min_size              = var.min_size
-  max_size              = var.max_size
-  desired_capacity      = var.desired_capacity
-  tags                  = var.tags
+
+  ami_id           = var.ami_id
+  instance_type    = var.instance_type
+  min_size         = var.min_size
+  max_size         = var.max_size
+  desired_capacity = var.desired_capacity
+  tags             = var.tags
 }
